@@ -8,9 +8,16 @@ edition = "2018"
 
 [dependencies]
 buddy_system_allocator = "0.6"
+linked_list_allocator = "0.10.5"
 
 [profile.release]
-debug = true
+# debug = true
+# strip = true
+# opt-level = "s"
+lto = true
+codegen-units = 1
+# panic = "abort"
+
 
 # [features]
 # board_qemu = []

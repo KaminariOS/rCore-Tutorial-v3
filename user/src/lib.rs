@@ -8,8 +8,12 @@ pub mod console;
 mod lang_items;
 mod syscall;
 
-use buddy_system_allocator::LockedHeap;
+use linked_list_allocator::LockedHeap;
 use syscall::*;
+
+#[macro_use]
+extern crate alloc;
+pub use alloc::{format, string::String, vec::Vec};
 
 const USER_HEAP_SIZE: usize = 16384;
 
@@ -28,7 +32,8 @@ pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
 pub extern "C" fn _start() -> ! {
     unsafe {
         HEAP.lock()
-            .init(HEAP_SPACE.as_ptr() as usize, USER_HEAP_SIZE);
+            .init(HEAP_SPACE.as_mut_ptr(), USER_HEAP_SIZE);
+        println!("HEAP ptr: {:#x}", 1);
     }
     exit(main());
 }

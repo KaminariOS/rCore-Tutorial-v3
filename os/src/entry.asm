@@ -3,9 +3,12 @@
 _start:
     la sp, boot_stack_top
     call rust_main
-
+_hlt:
+    wfi
+    j _hlt
     .section .bss.stack
     .globl boot_stack_lower_bound
+
 boot_stack_lower_bound:
     .space 4096 * 16
     .globl boot_stack_top

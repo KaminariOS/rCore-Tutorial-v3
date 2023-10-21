@@ -1,6 +1,6 @@
 //! File and filesystem-related syscalls
 use crate::mm::translated_byte_buffer;
-use crate::sbi::console_getchar;
+// use crate::sbi::console_getchar;
 use crate::task::{current_user_token, suspend_current_and_run_next};
 
 const FD_STDIN: usize = 0;
@@ -26,8 +26,9 @@ pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
         FD_STDIN => {
             assert_eq!(len, 1, "Only support len = 1 in sys_read!");
             let mut c: usize;
+            use crate::uart::get_char;
             loop {
-                c = console_getchar();
+                c =  get_char();
                 if c == 0 {
                     suspend_current_and_run_next();
                     continue;

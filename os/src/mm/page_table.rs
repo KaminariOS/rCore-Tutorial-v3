@@ -6,6 +6,8 @@ use alloc::vec::Vec;
 use bitflags::*;
 
 bitflags! {
+
+    #[derive(PartialEq)]
     pub struct PTEFlags: u8 {
         const V = 1 << 0;
         const R = 1 << 1;
@@ -15,6 +17,8 @@ bitflags! {
         const G = 1 << 5;
         const A = 1 << 6;
         const D = 1 << 7;
+        const VAD = Self::A.bits() | Self::D.bits() | Self::V.bits();
+        // const VAD = 1 << 0;
     }
 }
 
@@ -30,7 +34,7 @@ impl PageTableEntry {
     ///Create a PTE from ppn
     pub fn new(ppn: PhysPageNum, flags: PTEFlags) -> Self {
         PageTableEntry {
-            bits: ppn.0 << 10 | flags.bits as usize,
+            bits: ppn.0 << 10 | flags.bits() as usize,
         }
     }
     ///Return an empty PTE
@@ -96,7 +100,7 @@ impl PageTable {
             }
             if !pte.is_valid() {
                 let frame = frame_alloc().unwrap();
-                *pte = PageTableEntry::new(frame.ppn, PTEFlags::V);
+                *pte = PageTableEntry::new(frame.ppn, PTEFlags::VAD);
                 self.frames.push(frame);
             }
             ppn = pte.ppn();
@@ -124,7 +128,7 @@ impl PageTable {
     pub fn map(&mut self, vpn: VirtPageNum, ppn: PhysPageNum, flags: PTEFlags) {
         let pte = self.find_pte_create(vpn).unwrap();
         assert!(!pte.is_valid(), "vpn {:?} is mapped before mapping", vpn);
-        *pte = PageTableEntry::new(ppn, flags | PTEFlags::V);
+        *pte = PageTableEntry::new(ppn, flags | PTEFlags::VAD);
     }
     #[allow(unused)]
     pub fn unmap(&mut self, vpn: VirtPageNum) {

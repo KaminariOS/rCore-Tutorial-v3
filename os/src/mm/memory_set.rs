@@ -162,6 +162,16 @@ impl MemorySet {
                 None,
             );
         }
+
+        memory_set.push(
+            MapArea::new(
+                0x00_1000_0000.into(),
+                0x00_1002_FFFF.into(),
+                MapType::Identical,
+                MapPermission::R | MapPermission::W,
+            ),
+            None,
+        );
         memory_set
     }
     /// Include sections in elf and trampoline and TrapContext and user stack,
@@ -314,7 +324,7 @@ impl MapArea {
                 self.data_frames.insert(vpn, frame);
             }
         }
-        let pte_flags = PTEFlags::from_bits(self.map_perm.bits).unwrap();
+        let pte_flags = PTEFlags::from_bits(self.map_perm.bits()).unwrap();
         page_table.map(vpn, ppn, pte_flags);
     }
     pub fn unmap_one(&mut self, page_table: &mut PageTable, vpn: VirtPageNum) {
@@ -366,6 +376,7 @@ pub enum MapType {
 
 bitflags! {
     /// map permission corresponding to that in pte: `R W X U`
+    #[derive(Copy, Clone)]
     pub struct MapPermission: u8 {
         ///Readable
         const R = 1 << 1;

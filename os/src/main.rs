@@ -18,7 +18,7 @@
 //! userspace.
 
 #![deny(missing_docs)]
-#![deny(warnings)]
+// #![deny(warnings)]
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
@@ -32,8 +32,12 @@ extern crate bitflags;
 #[path = "boards/qemu.rs"]
 mod board;
 
-#[macro_use]
-mod console;
+
+#[path = "boards/vf2/uart.rs"]
+mod uart;
+
+// #[macro_use]
+// mod console;
 mod config;
 mod lang_items;
 mod loader;
@@ -44,6 +48,10 @@ pub mod syscall;
 pub mod task;
 mod timer;
 pub mod trap;
+
+
+#[macro_use]
+extern crate log;
 
 use core::arch::global_asm;
 
@@ -65,13 +73,14 @@ fn clear_bss() {
 /// the rust entry-point of os
 pub fn rust_main() -> ! {
     clear_bss();
+    uart::init_logger();
     println!("[kernel] Hello, world!");
     mm::init();
     mm::remap_test();
     task::add_initproc();
     println!("after initproc!");
     trap::init();
-    //trap::enable_interrupt();
+    // trap::enable_interrupt();
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
     loader::list_apps();
