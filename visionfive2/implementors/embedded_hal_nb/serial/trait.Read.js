@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["os"] = [{"text":"impl Read&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/core/primitive.u8.html\">u8</a>&gt; for <a class=\"struct\" href=\"os/uart/struct.JH71XXSerial.html\" title=\"struct os::uart::JH71XXSerial\">JH71XXSerial</a>","synthetic":false,"types":["os::uart::JH71XXSerial"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
